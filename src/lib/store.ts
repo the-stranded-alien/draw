@@ -49,6 +49,7 @@ interface DrawStore {
 
   // Canvas
   resetCanvas: () => void;
+  setElements: (elements: ExcalidrawElement[]) => void;
 }
 
 const defaultAppState: AppState = {
@@ -256,6 +257,15 @@ export const useDrawStore = create<DrawStore>()(
         state.appState = { ...defaultAppState };
         state.history = [{ elements: [] }];
         state.historyIndex = 0;
+      });
+    },
+
+    setElements: (elements) => {
+      set((state) => {
+        state.elements = elements;
+        state.history = [{ elements: [] }, { elements: JSON.parse(JSON.stringify(elements)) }];
+        state.historyIndex = 1;
+        state.appState.selectedElementIds = {};
       });
     },
   }))

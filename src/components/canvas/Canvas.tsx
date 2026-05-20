@@ -10,7 +10,7 @@ export default function Canvas() {
   const { appState } = useDrawStore();
   const { onPointerDown, onPointerMove, onPointerUp } = useCanvasInteraction(canvasRef);
 
-  // ── Resize canvas to fill window ──────────────────────────────────────────
+  // ── Size canvas to fill the window ────────────────────────────────────────
   useEffect(() => {
     const resize = () => {
       const canvas = canvasRef.current;
@@ -26,44 +26,62 @@ export default function Canvas() {
     return () => window.removeEventListener("resize", resize);
   }, []);
 
-  // ── requestAnimationFrame render loop ─────────────────────────────────────
+  // ── Rendering via Zustand subscribe + rAF ────────────────────────────────
   //
-  // Why rAF instead of a React useEffect on store changes:
-  //   Pointer events fire at 60 Hz+. React batches + delays state commits, so
-  //   a useEffect render loop skips frames during active drawing — the element
-  //   appears frozen or disappears between pointer-down and pointer-up.
+  // Why NOT a continuous rAF loop:
+  //   A plain rAF loop captures the canvas ref once at setup. If the canvas
+  //   dimensions are 0 at that instant (resize hasn't run yet), every frame
+  //   renders a blank 0×0 rect and elements are never visible.
   //
-  //   rAF reads the Zustand store *directly* (getState, no React subscription)
-  //   and renders every browser frame, so drawing is always smooth and current.
+  // Why NOT a React useEffect on store changes:
+  //   React batches + delays commits. Pointer events fire at 60 Hz+; React may
+  //   skip frames between pointer-down and pointer-up, so the in-progress shape
+  //   never redraws during the drag.
+  //
+  // Solution — subscribe to Zustand (fires synchronously on every state change)
+  //   and schedule ONE rAF per change (caps rendering at 60 fps). The render
+  //   callback reads canvasRef.current fresh each frame, so it's immune to
+  //   StrictMode remounts and resize races.
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    let raf: number | null = null;
 
-    let rafId: number;
+    const renderFrame = () => {
+      raf = null;
+      const canvas = canvasRef.current;
+      if (!canvas || canvas.width === 0 || canvas.height === 0) return;
 
-    const frame = () => {
-      // getState() reads the live Zustand state without triggering React renders
       const { elements, appState: state } = useDrawStore.getState();
       renderScene(canvas, elements, state);
 
-      // Selection boxes are drawn in canvas-pixel space (after renderScene resets transform)
+      // Selection boxes are drawn in canvas-pixel space (renderScene resets transform)
       const ctx = canvas.getContext("2d");
       if (ctx) {
         const dpr = window.devicePixelRatio || 1;
         const { scrollX, scrollY, zoom, selectedElementIds } = state;
         elements.forEach((el) => {
-          if (selectedElementIds[el.id] && !el.isDeleted) {
+          if (!el.isDeleted && selectedElementIds[el.id]) {
             renderSelectionBox(ctx, el, scrollX, scrollY, zoom.value, dpr);
           }
         });
       }
-
-      rafId = requestAnimationFrame(frame);
     };
 
-    rafId = requestAnimationFrame(frame);
-    return () => cancelAnimationFrame(rafId);
-  }, []); // empty deps — rAF loop runs for the lifetime of the canvas
+    const scheduleRender = () => {
+      if (raf !== null) return; // Already queued for this frame
+      raf = requestAnimationFrame(renderFrame);
+    };
+
+    // Render once on mount (after resize has run)
+    scheduleRender();
+
+    // Re-render whenever any Zustand state changes
+    const unsubscribe = useDrawStore.subscribe(scheduleRender);
+
+    return () => {
+      unsubscribe();
+      if (raf !== null) cancelAnimationFrame(raf);
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const cursor = appState.activeTool === "hand" ? "grab" : (CURSOR_MAP[appState.activeTool] ?? "default");
 

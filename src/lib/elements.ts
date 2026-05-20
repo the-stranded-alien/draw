@@ -4,6 +4,9 @@ import {
   RectangleElement,
   EllipseElement,
   DiamondElement,
+  CylinderElement,
+  TriangleElement,
+  ParallelogramElement,
   LinearElement,
   FreedrawElement,
   TextElement,
@@ -55,6 +58,15 @@ export function createElement(
 
     case "diamond":
       return { ...b, type: "diamond" } as DiamondElement;
+
+    case "cylinder":
+      return { ...b, type: "cylinder" } as CylinderElement;
+
+    case "triangle":
+      return { ...b, type: "triangle" } as TriangleElement;
+
+    case "parallelogram":
+      return { ...b, type: "parallelogram" } as ParallelogramElement;
 
     case "arrow":
       return {

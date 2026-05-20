@@ -4,6 +4,9 @@ export type ToolType =
   | "rectangle"
   | "ellipse"
   | "diamond"
+  | "cylinder"
+  | "triangle"
+  | "parallelogram"
   | "arrow"
   | "line"
   | "freedraw"
@@ -64,6 +67,18 @@ export interface DiamondElement extends BaseElement {
   type: "diamond";
 }
 
+export interface CylinderElement extends BaseElement {
+  type: "cylinder";
+}
+
+export interface TriangleElement extends BaseElement {
+  type: "triangle";
+}
+
+export interface ParallelogramElement extends BaseElement {
+  type: "parallelogram";
+}
+
 export interface LinearElement extends BaseElement {
   type: "arrow" | "line";
   points: Point[];
@@ -102,6 +117,9 @@ export type ExcalidrawElement =
   | RectangleElement
   | EllipseElement
   | DiamondElement
+  | CylinderElement
+  | TriangleElement
+  | ParallelogramElement
   | LinearElement
   | FreedrawElement
   | TextElement
