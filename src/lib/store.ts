@@ -95,7 +95,8 @@ export const useDrawStore = create<DrawStore>()(
       set((state) => {
         state.elements.push(element);
       });
-      get().pushHistory();
+      // Do NOT push history here — the element has zero size at this point.
+      // History is committed by the caller (onPointerUp) once the draw is complete.
     },
 
     updateElement: (id, updates) => {
