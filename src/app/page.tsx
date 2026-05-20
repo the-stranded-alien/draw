@@ -1,43 +1,23 @@
 "use client";
 import dynamic from "next/dynamic";
-import { useEffect } from "react";
-import { useDrawStore } from "@/lib/store";
-import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
-import Toolbar from "@/components/toolbar/Toolbar";
-import PropertiesPanel from "@/components/panels/PropertiesPanel";
-import BottomBar from "@/components/panels/BottomBar";
 
-// Canvas uses browser APIs — SSR disabled (per react perf guidelines: dynamic() for heavy components)
-const Canvas = dynamic(() => import("@/components/canvas/Canvas"), {
-  ssr: false,
-  loading: () => (
-    <div className="absolute inset-0 animate-pulse bg-gray-100 dark:bg-zinc-900" />
-  ),
-});
+// Excalidraw uses browser-only APIs — must be client-side only
+const ExcalidrawApp = dynamic(
+  () => import("@/components/ExcalidrawApp"),
+  {
+    ssr: false,
+    loading: () => (
+      <div style={{ height: "100vh", width: "100vw", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <span style={{ color: "#aaa", fontSize: 14 }}>Loading…</span>
+      </div>
+    ),
+  }
+);
 
-export default function DrawPage() {
-  useKeyboardShortcuts();
-  const { appState } = useDrawStore();
-
-  // Sync dark class with store theme (drives Tailwind dark: variants)
-  useEffect(() => {
-    const root = document.documentElement;
-    if (appState.theme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-  }, [appState.theme]);
-
+export default function Page() {
   return (
-    <main
-      className="relative h-screen w-screen overflow-hidden select-none"
-      style={{ background: appState.viewBackgroundColor }}
-    >
-      <Canvas />
-      <Toolbar />
-      <PropertiesPanel />
-      <BottomBar />
+    <main style={{ height: "100vh", width: "100vw", overflow: "hidden" }}>
+      <ExcalidrawApp />
     </main>
   );
 }
