@@ -348,6 +348,224 @@ const codingTemplate = item("tpl-coding", [
   T("Scratch Space", 0, 240, 720, 28, { fontSize: 13, strokeColor: "#868e96" }),
 ]);
 
+// ── EXTRA DSA SHAPES ─────────────────────────────────────────────────────────
+
+// Undirected graph — 5 labelled nodes + 6 edges
+const graph = item("ds-graph", [
+  E(110,  0, 50, 40, { backgroundColor: RED,    fillStyle: S }), T("A", 110,  0, 50, 40, { fontSize: 16 }),
+  E(  0, 80, 50, 40, { backgroundColor: BLUE,   fillStyle: S }), T("B",   0, 80, 50, 40, { fontSize: 16 }),
+  E(220, 80, 50, 40, { backgroundColor: BLUE,   fillStyle: S }), T("C", 220, 80, 50, 40, { fontSize: 16 }),
+  E( 50,180, 50, 40, { backgroundColor: GREEN,  fillStyle: S }), T("D",  50,180, 50, 40, { fontSize: 16 }),
+  E(170,180, 50, 40, { backgroundColor: GREEN,  fillStyle: S }), T("E", 170,180, 50, 40, { fontSize: 16 }),
+  // Edges
+  L([[135, 40],  [ 25, 80]]),
+  L([[135, 40],  [245, 80]]),
+  L([[ 25,120],  [ 75,180]]),
+  L([[245,120],  [195,180]]),
+  L([[ 50,100],  [220,100]]),
+  L([[100,200],  [170,200]]),
+]);
+
+// Two-pointer pattern — array with L/R cursors
+const twoPointers = item("ds-two-pointers", [
+  R(  0, 30, 52, 52, { backgroundColor: BLUE,   fillStyle: S }), T("2",   0, 30, 52, 52, { fontSize: 16 }),
+  R( 52, 30, 52, 52, { backgroundColor: BLUE,   fillStyle: S }), T("7",  52, 30, 52, 52, { fontSize: 16 }),
+  R(104, 30, 52, 52, { backgroundColor: BLUE,   fillStyle: S }), T("11",104, 30, 52, 52, { fontSize: 16 }),
+  R(156, 30, 52, 52, { backgroundColor: BLUE,   fillStyle: S }), T("15",156, 30, 52, 52, { fontSize: 16 }),
+  R(208, 30, 52, 52, { backgroundColor: BLUE,   fillStyle: S }), T("19",208, 30, 52, 52, { fontSize: 16 }),
+  R(260, 30, 52, 52, { backgroundColor: BLUE,   fillStyle: S }), T("22",260, 30, 52, 52, { fontSize: 16 }),
+  // L pointer
+  T("L",   4, 0, 44, 28, { fontSize: 13, strokeColor: "#2b8a3e" }),
+  A([[26, 28], [26, 30]]),
+  // R pointer
+  T("R", 264, 0, 44, 28, { fontSize: 13, strokeColor: "#c92a2a" }),
+  A([[286, 28], [286, 30]]),
+]);
+
+// Sliding window — highlighted window cells
+const slidingWindow = item("ds-sliding-window", [
+  R(  0, 30, 52, 52, { backgroundColor: GRAY,   fillStyle: S }), T("1",   0, 30, 52, 52, { fontSize: 16 }),
+  R( 52, 30, 52, 52, { backgroundColor: GRAY,   fillStyle: S }), T("3",  52, 30, 52, 52, { fontSize: 16 }),
+  R(104, 30, 52, 52, { backgroundColor: YELLOW, fillStyle: S }), T("5", 104, 30, 52, 52, { fontSize: 16 }),
+  R(156, 30, 52, 52, { backgroundColor: YELLOW, fillStyle: S }), T("2", 156, 30, 52, 52, { fontSize: 16 }),
+  R(208, 30, 52, 52, { backgroundColor: YELLOW, fillStyle: S }), T("8", 208, 30, 52, 52, { fontSize: 16 }),
+  R(260, 30, 52, 52, { backgroundColor: GRAY,   fillStyle: S }), T("4", 260, 30, 52, 52, { fontSize: 16 }),
+  R(312, 30, 52, 52, { backgroundColor: GRAY,   fillStyle: S }), T("6", 312, 30, 52, 52, { fontSize: 16 }),
+  T("window", 104, 0, 156, 28, { fontSize: 11, strokeColor: "#e67700" }),
+  L([[104, 28], [104, 30]]), L([[260, 28], [260, 30]]),
+]);
+
+// Min-Heap tree (7 nodes showing heap property)
+const minHeap = item("ds-min-heap", [
+  E(135,  0, 50, 40, { backgroundColor: RED,    fillStyle: S }), T("1",  135,  0, 50, 40, { fontSize: 18 }),
+  E( 55, 80, 50, 40, { backgroundColor: YELLOW, fillStyle: S }), T("3",   55, 80, 50, 40, { fontSize: 18 }),
+  E(215, 80, 50, 40, { backgroundColor: YELLOW, fillStyle: S }), T("2",  215, 80, 50, 40, { fontSize: 18 }),
+  E( 10,160, 50, 40, { backgroundColor: GREEN,  fillStyle: S }), T("7",   10,160, 50, 40, { fontSize: 18 }),
+  E( 90,160, 50, 40, { backgroundColor: GREEN,  fillStyle: S }), T("4",   90,160, 50, 40, { fontSize: 18 }),
+  E(170,160, 50, 40, { backgroundColor: GREEN,  fillStyle: S }), T("6",  170,160, 50, 40, { fontSize: 18 }),
+  E(250,160, 50, 40, { backgroundColor: GREEN,  fillStyle: S }), T("5",  250,160, 50, 40, { fontSize: 18 }),
+  L([[160, 40],  [ 80, 80]]), L([[160, 40],  [240, 80]]),
+  L([[ 80,120],  [ 35,160]]), L([[ 80,120],  [115,160]]),
+  L([[240,120],  [195,160]]), L([[240,120],  [275,160]]),
+  T("Min-Heap", 95, 210, 130, 24, { fontSize: 12, strokeColor: "#868e96" }),
+]);
+
+// DP table — 5×5 grid (2D DP template)
+const dpTable = item("ds-dp-table", [
+  // Column headers
+  T("",  0,  0, 52, 36, { fontSize: 11, strokeColor: "#868e96" }),
+  T("0", 52, 0, 52, 36, { fontSize: 12, strokeColor: "#1971c2" }),
+  T("1",104, 0, 52, 36, { fontSize: 12, strokeColor: "#1971c2" }),
+  T("2",156, 0, 52, 36, { fontSize: 12, strokeColor: "#1971c2" }),
+  T("3",208, 0, 52, 36, { fontSize: 12, strokeColor: "#1971c2" }),
+  T("4",260, 0, 52, 36, { fontSize: 12, strokeColor: "#1971c2" }),
+  // Row headers + cells
+  ...[0,1,2,3,4].flatMap(r => [
+    T(String(r), 0, 36+r*44, 52, 44, { fontSize: 12, strokeColor: "#c92a2a" }),
+    ...([0,1,2,3,4].map(c =>
+      r===0 && c===0
+        ? R(52+c*52, 36+r*44, 52, 44, { backgroundColor: "#a5d8ff", fillStyle: S })
+        : R(52+c*52, 36+r*44, 52, 44)
+    )),
+  ]),
+  T("dp[i][j]", 52, 260, 260, 26, { fontSize: 11, strokeColor: "#868e96" }),
+]);
+
+// Directed Acyclic Graph (DAG) — topological sort friendly
+const dag = item("ds-dag", [
+  R(  0, 60, 70, 40, { backgroundColor: RED,   fillStyle: S }), T("A",   0, 60, 70, 40, { fontSize: 15 }),
+  R(120,  0, 70, 40, { backgroundColor: BLUE,  fillStyle: S }), T("B", 120,  0, 70, 40, { fontSize: 15 }),
+  R(120,120, 70, 40, { backgroundColor: BLUE,  fillStyle: S }), T("C", 120,120, 70, 40, { fontSize: 15 }),
+  R(250, 60, 70, 40, { backgroundColor: GREEN, fillStyle: S }), T("D", 250, 60, 70, 40, { fontSize: 15 }),
+  R(380, 60, 70, 40, { backgroundColor: GRAY,  fillStyle: S }), T("E", 380, 60, 70, 40, { fontSize: 15 }),
+  A([[ 70, 80], [120, 20]]),
+  A([[ 70, 80], [120,140]]),
+  A([[190, 20], [250, 80]]),
+  A([[190,140], [250, 80]]),
+  A([[320, 80], [380, 80]]),
+]);
+
+// ── EXTRA SYSTEM DESIGN ───────────────────────────────────────────────────────
+
+// Kafka Topic with partitions
+const kafkaTopic = item("sysdesign-kafka", [
+  R(0, 0, 300, 140, { backgroundColor: "#fff9db", fillStyle: S }),
+  R(0, 0, 300,  32, { backgroundColor: "#ffe066", fillStyle: S }),
+  T("Kafka Topic", 0, 0, 300, 32, { fontSize: 14 }),
+  R(10, 42, 280, 28, { backgroundColor: ORANGE, fillStyle: S }), T("Partition 0", 10, 42, 280, 28, { fontSize: 11 }),
+  R(10, 76, 280, 28, { backgroundColor: ORANGE, fillStyle: S }), T("Partition 1", 10, 76, 280, 28, { fontSize: 11 }),
+  R(10,110, 280, 28, { backgroundColor: ORANGE, fillStyle: S }), T("Partition 2", 10,110, 280, 28, { fontSize: 11 }),
+]);
+
+// Docker Container
+const dockerContainer = item("sysdesign-docker", [
+  R(0, 0, 160, 100, { strokeStyle: "dashed", strokeWidth: 2, roughness: 0 }),
+  R(0, 0, 160,  30, { backgroundColor: "#a5d8ff", fillStyle: S, roughness: 0 }),
+  T("Container", 0, 0, 160, 30, { fontSize: 13 }),
+  T("image: nginx\nport: 8080", 8, 40, 144, 52, { fontSize: 11, strokeColor: "#555", textAlign: "left" }),
+]);
+
+// Kubernetes Pod
+const k8sPod = item("sysdesign-k8s-pod", [
+  R(0, 0, 260, 130, { strokeStyle: "dashed", roughness: 0, strokeColor: "#5c7adb" }),
+  R(0, 0, 260, 28, { backgroundColor: "#bac8ff", fillStyle: S, roughness: 0 }),
+  T("Pod", 0, 0, 260, 28, { fontSize: 13, strokeColor: "#364fc7" }),
+  R(10, 38,  110, 80, { strokeStyle: "dashed", roughness: 0, strokeColor: "#888" }),
+  T("Container 1", 10, 38, 110, 28, { fontSize: 10, strokeColor: "#555" }),
+  R(140, 38, 110, 80, { strokeStyle: "dashed", roughness: 0, strokeColor: "#888" }),
+  T("Container 2", 140, 38, 110, 28, { fontSize: 10, strokeColor: "#555" }),
+]);
+
+// Rate Limiter
+const rateLimiter = item("sysdesign-rate-limiter", [
+  R(0, 0, 170, 80, { backgroundColor: RED, fillStyle: S }),
+  R(0, 0, 170, 28, { backgroundColor: "#ffa8a8", fillStyle: S }),
+  T("Rate Limiter", 0, 0, 170, 28, { fontSize: 13 }),
+  T("100 req/min", 0, 38, 170, 30, { fontSize: 11, strokeColor: "#c92a2a" }),
+]);
+
+// Search / Elasticsearch
+const searchIndex = item("sysdesign-search", [
+  R(0, 0, 180, 80, { backgroundColor: YELLOW, fillStyle: S }),
+  R(0, 0, 180, 28, { backgroundColor: "#ffe066", fillStyle: S }),
+  T("Search Index", 0, 0, 180, 28, { fontSize: 13 }),
+  T("Elasticsearch / Solr", 0, 38, 180, 30, { fontSize: 10, strokeColor: "#e67700" }),
+]);
+
+// Object storage
+const objectStorage = item("sysdesign-object-storage", [
+  R(0, 0, 180, 80, { backgroundColor: TEAL, fillStyle: S }),
+  R(0, 0, 180, 28, { backgroundColor: "#63e6be", fillStyle: S }),
+  T("Object Storage", 0, 0, 180, 28, { fontSize: 13 }),
+  T("S3 / GCS / Blob", 0, 38, 180, 30, { fontSize: 11, strokeColor: "#087f5b" }),
+]);
+
+// ── INTERVIEW REFERENCE TOOLS ─────────────────────────────────────────────────
+
+// Big-O complexity reference table
+const bigOTable = item("interview-big-o", [
+  // Header
+  R(0,   0, 200, 34, { backgroundColor: "#1e1e1e", fillStyle: S, roughness: 0 }),
+  R(200, 0, 200, 34, { backgroundColor: "#1e1e1e", fillStyle: S, roughness: 0 }),
+  R(400, 0, 180, 34, { backgroundColor: "#1e1e1e", fillStyle: S, roughness: 0 }),
+  T("Complexity",  0,   0, 200, 34, { fontSize: 13, strokeColor: "#fff" }),
+  T("Name",       200,  0, 200, 34, { fontSize: 13, strokeColor: "#fff" }),
+  T("Example",    400,  0, 180, 34, { fontSize: 13, strokeColor: "#fff" }),
+  // Rows
+  ...([
+    ["O(1)",       "Constant",    "Hash lookup",      GREEN],
+    ["O(log n)",   "Logarithmic", "Binary search",    GREEN],
+    ["O(n)",       "Linear",      "Array scan",       YELLOW],
+    ["O(n log n)", "Linearithmic","Merge sort",       YELLOW],
+    ["O(n²)",      "Quadratic",   "Bubble sort",      ORANGE],
+    ["O(2ⁿ)",      "Exponential", "Subsets",          RED],
+  ] as [string,string,string,string][]).flatMap(([c,n,ex,col], i) => [
+    R(  0, 34+i*34, 200, 34, { backgroundColor: col, fillStyle: S, roughness: 0 }),
+    R(200, 34+i*34, 200, 34, { roughness: 0 }),
+    R(400, 34+i*34, 180, 34, { roughness: 0 }),
+    T(c,   0, 34+i*34, 200, 34, { fontSize: 12 }),
+    T(n,  200,34+i*34, 200, 34, { fontSize: 12 }),
+    T(ex, 400,34+i*34, 180, 34, { fontSize: 11, strokeColor: "#555" }),
+  ]),
+]);
+
+// System Design checklist
+const sdChecklist = item("interview-sd-checklist", [
+  R(0, 0, 340, 400, { backgroundColor: "#f8f9fa", fillStyle: S, roughness: 0, strokeColor: "#dee2e6" }),
+  R(0, 0, 340,  40, { backgroundColor: "#1e1e1e", fillStyle: S, roughness: 0 }),
+  T("System Design Checklist", 0, 0, 340, 40, { fontSize: 14, strokeColor: "#fff" }),
+  ...([
+    "Clarify requirements & constraints",
+    "Estimate scale (QPS, storage, bandwidth)",
+    "Define API endpoints",
+    "High-level architecture diagram",
+    "Data model / schema",
+    "Identify bottlenecks",
+    "Deep-dive: DB choice (SQL vs NoSQL)",
+    "Deep-dive: Caching strategy",
+    "Deep-dive: Scaling (horizontal/vertical)",
+    "Fault tolerance & replication",
+  ]).flatMap((txt, i) => [
+    R(10, 50+i*34, 20, 20, { roughness: 0, backgroundColor: "#fff" }),
+    T(txt, 38, 50+i*34, 296, 34, { fontSize: 11, strokeColor: "#333", textAlign: "left" }),
+  ]),
+]);
+
+// Algo interview approach template
+const algoApproach = item("interview-algo-approach", [
+  R(0, 0, 360, 300, { backgroundColor: "#f8f9fa", fillStyle: S, roughness: 0, strokeColor: "#dee2e6" }),
+  R(0, 0, 360, 40, { backgroundColor: "#364fc7", fillStyle: S, roughness: 0 }),
+  T("Algorithm Approach", 0, 0, 360, 40, { fontSize: 14, strokeColor: "#fff" }),
+  R(10,  50, 340,  50, { backgroundColor: "#e3fafc", fillStyle: S, roughness: 0 }),
+  T("1. Understand  →  Restate + edge cases", 18, 50, 330, 50, { fontSize: 11, textAlign: "left", strokeColor: "#1971c2" }),
+  R(10, 110, 340, 50, { backgroundColor: "#ebfbee", fillStyle: S, roughness: 0 }),
+  T("2. Brute force  →  Naive time/space", 18, 110, 330, 50, { fontSize: 11, textAlign: "left", strokeColor: "#2b8a3e" }),
+  R(10, 170, 340, 50, { backgroundColor: "#fff9db", fillStyle: S, roughness: 0 }),
+  T("3. Optimise  →  Data structure / pattern", 18, 170, 330, 50, { fontSize: 11, textAlign: "left", strokeColor: "#e67700" }),
+  R(10, 230, 340, 50, { backgroundColor: "#f3f0ff", fillStyle: S, roughness: 0 }),
+  T("4. Code  →  Clean, modular, named vars", 18, 230, 330, 50, { fontSize: 11, textAlign: "left", strokeColor: "#5f3dc4" }),
+]);
+
 // ── Export ────────────────────────────────────────────────────────────────────
 
 export const LIBRARY_ITEMS = [
@@ -356,8 +574,12 @@ export const LIBRARY_ITEMS = [
   // System design
   client, loadBalancer, appServer,
   dbPrimary, dbReplica, cache, messageQueue, cdn, apiGateway, microservice,
+  kafkaTopic, dockerContainer, k8sPod, rateLimiter, searchIndex, objectStorage,
   // Data structures
   array, linkedList, binaryTree, stack, queue, hashMap,
+  graph, dag, twoPointers, slidingWindow, minHeap, dpTable,
+  // Interview tools
+  bigOTable, sdChecklist, algoApproach,
   // Templates
   systemDesignTemplate, codingTemplate,
 ];
