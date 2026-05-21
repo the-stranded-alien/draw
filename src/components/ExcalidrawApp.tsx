@@ -14,16 +14,6 @@ function loadSavedScene() {
 }
 
 // ── Themes ────────────────────────────────────────────────────────────────────
-// The accent variables are applied via element.style.setProperty() on the
-// .excalidraw DOM node (inline styles, specificity 1,0,0,0) — this beats any
-// CSS-file rule unconditionally and works regardless of stylesheet load order.
-
-const THEME_VARS = [
-  "--color-primary", "--color-primary-darker", "--color-primary-darkest",
-  "--color-primary-hover", "--color-primary-light", "--color-primary-light-darker",
-  "--color-brand-hover", "--color-brand-active", "--color-selection",
-] as const;
-
 const THEMES = {
   light: {
     excalidrawTheme: "light" as const,
@@ -118,9 +108,9 @@ function ThemeSwitcher({ current, onChange }: { current: ThemeKey; onChange: (k:
 
 // ── Main component ────────────────────────────────────────────────────────────
 export default function ExcalidrawApp() {
-  const apiRef      = useRef<ExcalidrawImperativeAPI | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const saveTimer   = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const apiRef        = useRef<ExcalidrawImperativeAPI | null>(null);
+  const styleTagRef   = useRef<HTMLStyleElement | null>(null);
+  const saveTimer     = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [theme, setTheme] = useState<ThemeKey>("light");
 
   const [initialData] = useState(() => ({
@@ -133,16 +123,29 @@ export default function ExcalidrawApp() {
     window.EXCALIDRAW_ASSET_PATH = "/";
   }, []);
 
-  // Apply accent-colour CSS variables directly on the .excalidraw DOM element.
-  // Inline styles (specificity 1,0,0,0) beat every CSS rule unconditionally.
+  // Inject a dedicated <style> tag into <head> with !important overrides.
+  // This tag is appended after Excalidraw's bundled CSS and uses !important,
+  // so it wins unconditionally regardless of load order or specificity.
   const applyThemeColors = useCallback((themeKey: ThemeKey) => {
-    const el = containerRef.current?.querySelector(".excalidraw") as HTMLElement | null;
-    if (!el) return;
-    // Clear any previous overrides
-    THEME_VARS.forEach((k) => el.style.removeProperty(k));
-    // Apply new overrides (null vars = use Excalidraw CSS defaults)
+    if (typeof document === "undefined") return;
+    if (!styleTagRef.current) {
+      const existing = document.getElementById("draw-theme-override") as HTMLStyleElement | null;
+      if (existing) {
+        styleTagRef.current = existing;
+      } else {
+        const el = document.createElement("style");
+        el.id = "draw-theme-override";
+        document.head.appendChild(el);
+        styleTagRef.current = el;
+      }
+    }
     const vars = THEMES[themeKey].vars;
-    if (vars) Object.entries(vars).forEach(([k, v]) => el.style.setProperty(k, v));
+    if (!vars) {
+      styleTagRef.current.textContent = "";
+      return;
+    }
+    const rules = Object.entries(vars).map(([k, v]) => `  ${k}: ${v} !important;`).join("\n");
+    styleTagRef.current.textContent = `.excalidraw {\n${rules}\n}`;
   }, []);
 
   useEffect(() => {
@@ -167,13 +170,9 @@ export default function ExcalidrawApp() {
   useEffect(() => () => { if (saveTimer.current) clearTimeout(saveTimer.current); }, []);
 
   return (
-    <div ref={containerRef} style={{ width: "100vw", height: "100vh" }}>
+    <div style={{ width: "100vw", height: "100vh" }}>
       <Excalidraw
-        excalidrawAPI={(api) => {
-          apiRef.current = api;
-          // API ready = Excalidraw is mounted, safe to apply theme now
-          requestAnimationFrame(() => applyThemeColors(theme));
-        }}
+        excalidrawAPI={(api) => { apiRef.current = api; }}
         initialData={initialData}
         theme={THEMES[theme].excalidrawTheme}
         onChange={handleChange}
