@@ -566,15 +566,196 @@ const algoApproach = item("interview-algo-approach", [
   T("4. Code  →  Clean, modular, named vars", 18, 230, 330, 50, { fontSize: 11, textAlign: "left", strokeColor: "#5f3dc4" }),
 ]);
 
+// ── AWS & CLOUD SERVICES ──────────────────────────────────────────────────────
+// Color palette per category (works in light + dark mode):
+//   Compute   → warm orange  #ffd8a8 / header #ffa94d
+//   Storage   → fresh green  #b2f2bb / header #69db7c
+//   Database  → sky blue     #a5d8ff / header #4dabf7
+//   Network   → soft purple  #d0bfff / header #9775fa
+//   Messaging → warm yellow  #ffec99 / header #fcc419
+//   Security  → light red    #ffc9c9 / header #ff6b6b
+//   Monitor   → teal         #96f2d7 / header #38d9a9
+
+function awsBox(id: string, label: string, sub: string, bg: string, hdr: string) {
+  return item(id, [
+    R(0, 0, 180, 80, { backgroundColor: bg,  fillStyle: S, roughness: 0 }),
+    R(0, 0, 180, 28, { backgroundColor: hdr, fillStyle: S, roughness: 0 }),
+    T(label, 0,   0, 180, 28, { fontSize: 13 }),
+    T(sub,   0,  36, 180, 32, { fontSize: 10, strokeColor: "#555" }),
+  ]);
+}
+
+// ── Compute ───────────────────────────────────────────────────────────────────
+const ec2 = awsBox("aws-ec2",      "EC2",          "Virtual Machine",     "#ffd8a8", "#ffa94d");
+const lambda = awsBox("aws-lambda","Lambda",        "Serverless Function", "#ffd8a8", "#ffa94d");
+const ecs    = awsBox("aws-ecs",   "ECS",           "Container Service",   "#ffd8a8", "#ffa94d");
+const eks    = awsBox("aws-eks",   "EKS",           "Kubernetes Service",  "#ffd8a8", "#ffa94d");
+const fargate= awsBox("aws-fargate","Fargate",      "Serverless Containers","#ffd8a8","#ffa94d");
+
+// ── Storage ───────────────────────────────────────────────────────────────────
+const s3 = item("aws-s3", [
+  R(0, 0, 180, 80, { backgroundColor: "#b2f2bb", fillStyle: S, roughness: 0 }),
+  R(0, 0, 180, 28, { backgroundColor: "#69db7c", fillStyle: S, roughness: 0 }),
+  T("S3 Bucket",       0,  0, 180, 28, { fontSize: 13 }),
+  T("Object Storage",  0, 36, 180, 20, { fontSize: 10, strokeColor: "#2b8a3e" }),
+  T("bucket-name/",    0, 54, 180, 20, { fontSize: 9,  strokeColor: "#868e96" }),
+]);
+const ebs  = awsBox("aws-ebs",  "EBS",  "Block Storage",   "#b2f2bb", "#69db7c");
+const efs  = awsBox("aws-efs",  "EFS",  "Elastic File System","#b2f2bb","#69db7c");
+const glacier = awsBox("aws-glacier","S3 Glacier","Cold Archive Storage","#b2f2bb","#69db7c");
+
+// ── Database ──────────────────────────────────────────────────────────────────
+const rds = item("aws-rds", [
+  R(0, 28, 180, 90, { backgroundColor: "#a5d8ff", fillStyle: S, roughness: 0 }),
+  E(0,  4, 180, 50, { backgroundColor: "#a5d8ff", fillStyle: S, roughness: 0 }),
+  E(0, 90, 180, 50, { backgroundColor: "transparent", fillStyle: "none", roughness: 0 }),
+  T("RDS",          0, 48, 180, 28, { fontSize: 14 }),
+  T("PostgreSQL / MySQL", 0, 78, 180, 22, { fontSize: 9, strokeColor: "#1971c2" }),
+]);
+const dynamodb = item("aws-dynamodb", [
+  R(0, 0, 180, 80, { backgroundColor: "#a5d8ff", fillStyle: S, roughness: 0 }),
+  R(0, 0, 180, 28, { backgroundColor: "#4dabf7", fillStyle: S, roughness: 0 }),
+  T("DynamoDB",    0,  0, 180, 28, { fontSize: 13 }),
+  T("NoSQL / Key-Value", 0, 36, 180, 20, { fontSize: 10, strokeColor: "#1971c2" }),
+  T("On-demand   WCU/RCU", 0, 54, 180, 20, { fontSize: 9, strokeColor: "#868e96" }),
+]);
+const elasticache = item("aws-elasticache", [
+  R(0, 0, 180, 80, { backgroundColor: "#ffc9c9", fillStyle: S, roughness: 0 }),
+  R(0, 0, 180, 28, { backgroundColor: "#ff6b6b", fillStyle: S, roughness: 0 }),
+  T("ElastiCache", 0,  0, 180, 28, { fontSize: 13 }),
+  T("Redis / Memcached",  0, 36, 180, 20, { fontSize: 10, strokeColor: "#c92a2a" }),
+  T("In-memory cache",    0, 54, 180, 20, { fontSize: 9,  strokeColor: "#868e96" }),
+]);
+const aurora    = awsBox("aws-aurora",   "Aurora",    "MySQL / Postgres",    "#a5d8ff", "#4dabf7");
+const redshift  = awsBox("aws-redshift", "Redshift",  "Data Warehouse",      "#a5d8ff", "#4dabf7");
+const documentdb= awsBox("aws-documentdb","DocumentDB","MongoDB-compatible",  "#a5d8ff", "#4dabf7");
+
+// ── Networking ────────────────────────────────────────────────────────────────
+const alb = item("aws-alb", [
+  D(0, 0, 200, 80, { backgroundColor: "#d0bfff", fillStyle: S, roughness: 0 }),
+  T("ALB",                    25, 15, 150, 22, { fontSize: 14 }),
+  T("Application Load Balancer", 20, 38, 160, 20, { fontSize: 9, strokeColor: "#5f3dc4" }),
+]);
+const nlb = item("aws-nlb", [
+  D(0, 0, 200, 80, { backgroundColor: "#e0cffc", fillStyle: S, roughness: 0 }),
+  T("NLB",              25, 15, 150, 22, { fontSize: 14 }),
+  T("Network Load Balancer", 20, 38, 160, 20, { fontSize: 9, strokeColor: "#5f3dc4" }),
+]);
+const apiGw = item("aws-api-gw", [
+  R(0, 0, 190, 80, { backgroundColor: "#d0bfff", fillStyle: S, roughness: 0 }),
+  R(0, 0, 190, 28, { backgroundColor: "#9775fa", fillStyle: S, roughness: 0 }),
+  T("API Gateway",  0,  0, 190, 28, { fontSize: 13 }),
+  T("REST / HTTP / WebSocket", 0, 36, 190, 20, { fontSize: 9, strokeColor: "#5f3dc4" }),
+  T("Throttle  Auth  Transform",  0, 54, 190, 20, { fontSize: 9, strokeColor: "#868e96" }),
+]);
+const cloudfront = item("aws-cloudfront", [
+  E( 30, 30, 100, 65, { backgroundColor: "#d0bfff", fillStyle: S }),
+  E(  0, 40,  75, 55, { backgroundColor: "#d0bfff", fillStyle: S }),
+  E(100, 40,  75, 55, { backgroundColor: "#d0bfff", fillStyle: S }),
+  E( 20, 10,  80, 65, { backgroundColor: "#d0bfff", fillStyle: S }),
+  E( 82, 10,  80, 65, { backgroundColor: "#d0bfff", fillStyle: S }),
+  T("CloudFront", 25, 30, 120, 40, { fontSize: 14 }),
+]);
+const route53    = awsBox("aws-route53",    "Route 53",    "DNS / Health Checks",   "#d0bfff", "#9775fa");
+const natGw      = awsBox("aws-nat-gw",     "NAT Gateway", "Outbound Internet",      "#d0bfff", "#9775fa");
+const internetGw = awsBox("aws-internet-gw","Internet GW", "VPC Internet Access",    "#d0bfff", "#9775fa");
+const vpc        = item("aws-vpc", [
+  R(0, 0, 400, 260, { strokeStyle: "dashed", strokeColor: "#9775fa", roughness: 0 }),
+  R(0, 0, 400,  36, { backgroundColor: "#d0bfff", fillStyle: S, roughness: 0 }),
+  T("VPC  10.0.0.0/16", 0, 0, 400, 36, { fontSize: 14 }),
+  // Public subnet
+  R(16,  50, 170, 100, { strokeStyle: "dashed", strokeColor: "#69db7c", roughness: 0 }),
+  T("Public Subnet",  16, 50, 170, 24, { fontSize: 11, strokeColor: "#2b8a3e" }),
+  // Private subnet
+  R(214, 50, 170, 100, { strokeStyle: "dashed", strokeColor: "#ff6b6b", roughness: 0 }),
+  T("Private Subnet", 214, 50, 170, 24, { fontSize: 11, strokeColor: "#c92a2a" }),
+  T("AZ us-east-1a", 0, 168, 400, 24, { fontSize: 10, strokeColor: "#868e96" }),
+]);
+
+// ── Messaging ─────────────────────────────────────────────────────────────────
+const sqs = item("aws-sqs", [
+  R(0, 0, 200, 70, { backgroundColor: "#ffec99", fillStyle: S, roughness: 0 }),
+  R(0, 0, 200, 28, { backgroundColor: "#fcc419", fillStyle: S, roughness: 0 }),
+  T("SQS Queue",   0,  0, 200, 28, { fontSize: 13 }),
+  L([[40, 28], [40, 70]]), L([[80, 28], [80, 70]]),
+  L([[120,28], [120,70]]),L([[160,28], [160,70]]),
+  T("FIFO / Standard",0, 38, 200, 26, { fontSize: 10, strokeColor: "#e67700" }),
+]);
+const sns = item("aws-sns", [
+  R(0, 0, 190, 70, { backgroundColor: "#ffec99", fillStyle: S, roughness: 0 }),
+  R(0, 0, 190, 28, { backgroundColor: "#fcc419", fillStyle: S, roughness: 0 }),
+  T("SNS Topic",         0,  0, 190, 28, { fontSize: 13 }),
+  T("Pub/Sub Fan-out",   0, 36, 190, 28, { fontSize: 10, strokeColor: "#e67700" }),
+  // Fan-out arrows
+  A([[95, 70], [40, 110]]), A([[95, 70], [95, 110]]), A([[95, 70], [150, 110]]),
+]);
+const eventbridge = awsBox("aws-eventbridge","EventBridge","Event Bus / Rules",     "#ffec99","#fcc419");
+const kinesis     = awsBox("aws-kinesis",    "Kinesis",   "Real-time Streams",      "#ffec99","#fcc419");
+
+// ── Security ──────────────────────────────────────────────────────────────────
+const iam         = awsBox("aws-iam",        "IAM",       "Identity & Access",      "#ffc9c9","#ff6b6b");
+const cognito     = awsBox("aws-cognito",    "Cognito",   "User Pools / Auth",      "#ffc9c9","#ff6b6b");
+const secretsMgr  = awsBox("aws-secrets",    "Secrets Mgr","Credentials Store",     "#ffc9c9","#ff6b6b");
+const waf         = awsBox("aws-waf",        "WAF",       "Web Application Firewall","#ffc9c9","#ff6b6b");
+
+// ── Monitoring / DevOps ───────────────────────────────────────────────────────
+const cloudwatch = awsBox("aws-cloudwatch","CloudWatch","Metrics / Logs / Alarms","#96f2d7","#38d9a9");
+const xray       = awsBox("aws-xray",      "X-Ray",     "Distributed Tracing",    "#96f2d7","#38d9a9");
+const codecommit = awsBox("aws-codecommit","CodeCommit","Git Repository",          "#96f2d7","#38d9a9");
+const codepipeline=awsBox("aws-codepipeline","CodePipeline","CI/CD Pipeline",      "#96f2d7","#38d9a9");
+
+// ── Generic Cloud ─────────────────────────────────────────────────────────────
+const reverseProxy = item("cloud-reverse-proxy", [
+  R(0, 0, 170, 80, { backgroundColor: "#d0bfff", fillStyle: S, roughness: 0 }),
+  R(0, 0, 170, 28, { backgroundColor: "#9775fa", fillStyle: S, roughness: 0 }),
+  T("Reverse Proxy",  0,  0, 170, 28, { fontSize: 13 }),
+  T("Nginx / HAProxy",0, 36, 170, 28, { fontSize: 11, strokeColor: "#5f3dc4" }),
+]);
+const nosqlDb = item("cloud-nosql", [
+  R(0, 28, 160, 90, { backgroundColor: "#a5d8ff", fillStyle: S, roughness: 0 }),
+  E(0,  4, 160, 50, { backgroundColor: "#a5d8ff", fillStyle: S, roughness: 0 }),
+  E(0, 90, 160, 50, { backgroundColor: "transparent", fillStyle: "none", roughness: 0 }),
+  T("NoSQL DB",        0, 48, 160, 28, { fontSize: 14 }),
+  T("MongoDB / Cassandra", 0, 78, 160, 22, { fontSize: 9, strokeColor: "#1971c2" }),
+]);
+const graphDb = item("cloud-graph-db", [
+  R(0, 0, 170, 80, { backgroundColor: "#b2f2bb", fillStyle: S, roughness: 0 }),
+  R(0, 0, 170, 28, { backgroundColor: "#69db7c", fillStyle: S, roughness: 0 }),
+  T("Graph DB",       0,  0, 170, 28, { fontSize: 13 }),
+  T("Neo4j / Neptune",0, 36, 170, 28, { fontSize: 11, strokeColor: "#2b8a3e" }),
+]);
+const timeseries = item("cloud-timeseries", [
+  R(0, 0, 190, 80, { backgroundColor: "#96f2d7", fillStyle: S, roughness: 0 }),
+  R(0, 0, 190, 28, { backgroundColor: "#38d9a9", fillStyle: S, roughness: 0 }),
+  T("Time Series DB", 0,  0, 190, 28, { fontSize: 13 }),
+  T("InfluxDB / Prometheus",0,36,190, 28, { fontSize: 10, strokeColor: "#087f5b" }),
+]);
+
 // ── Export ────────────────────────────────────────────────────────────────────
 
 export const LIBRARY_ITEMS = [
   // Shapes
   cloud, cylinder, actor, serverRack,
-  // System design
+  // System design — generic
   client, loadBalancer, appServer,
   dbPrimary, dbReplica, cache, messageQueue, cdn, apiGateway, microservice,
   kafkaTopic, dockerContainer, k8sPod, rateLimiter, searchIndex, objectStorage,
+  // Generic cloud
+  reverseProxy, nosqlDb, graphDb, timeseries,
+  // AWS — Compute
+  ec2, lambda, ecs, eks, fargate,
+  // AWS — Storage
+  s3, ebs, efs, glacier,
+  // AWS — Database
+  rds, dynamodb, elasticache, aurora, redshift, documentdb,
+  // AWS — Networking
+  alb, nlb, apiGw, cloudfront, route53, natGw, internetGw, vpc,
+  // AWS — Messaging
+  sqs, sns, eventbridge, kinesis,
+  // AWS — Security
+  iam, cognito, secretsMgr, waf,
+  // AWS — Monitoring / DevOps
+  cloudwatch, xray, codecommit, codepipeline,
   // Data structures
   array, linkedList, binaryTree, stack, queue, hashMap,
   graph, dag, twoPointers, slidingWindow, minHeap, dpTable,
