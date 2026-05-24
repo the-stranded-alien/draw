@@ -5,10 +5,13 @@ import {
   Excalidraw, MainMenu, serializeAsJSON,
   exportToBlob, exportToSvg, exportToClipboard,
 } from "@excalidraw/excalidraw";
-import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
+import type { ExcalidrawImperativeAPI, UIAppState } from "@excalidraw/excalidraw/types";
 import "@excalidraw/excalidraw/index.css";
 import { LIBRARY_ITEMS } from "@/lib/libraryItems";
-import { Maximize2, Copy, ImageDown, FileCode2, Expand, Minimize, Sun, Moon } from "lucide-react";
+import {
+  Scan, Copy, ImageDown, FileCode2, Expand, Minimize, Sun, Moon,
+  MousePointer2, Square, Circle, Diamond, ArrowUpRight, Minus, Type, Pencil, Frame,
+} from "lucide-react";
 
 // ── Persistence ───────────────────────────────────────────────────────────────
 const STORAGE_KEY = "draw-excalidraw-scene";
@@ -16,6 +19,21 @@ function loadSavedScene() {
   try { const r = localStorage.getItem(STORAGE_KEY); return r ? JSON.parse(r) : null; }
   catch { return null; }
 }
+
+// ── Tool definitions ──────────────────────────────────────────────────────────
+type ToolType = "selection" | "rectangle" | "diamond" | "ellipse" | "arrow" | "line" | "freedraw" | "text" | "frame";
+
+const SHAPE_TOOLS: { tool: ToolType; title: string; icon: React.ReactNode }[] = [
+  { tool: "selection",  title: "Select (V)",      icon: <MousePointer2 size={13} /> },
+  { tool: "rectangle",  title: "Rectangle (R)",   icon: <Square        size={13} /> },
+  { tool: "ellipse",    title: "Ellipse (O)",      icon: <Circle        size={13} /> },
+  { tool: "diamond",    title: "Diamond (D)",      icon: <Diamond       size={13} /> },
+  { tool: "arrow",      title: "Arrow (A)",        icon: <ArrowUpRight  size={13} /> },
+  { tool: "line",       title: "Line (L)",         icon: <Minus         size={13} /> },
+  { tool: "freedraw",   title: "Draw (X)",         icon: <Pencil        size={13} /> },
+  { tool: "text",       title: "Text (T)",         icon: <Type          size={13} /> },
+  { tool: "frame",      title: "Frame (F)",        icon: <Frame         size={13} /> },
+];
 
 // ── Shared icon button ────────────────────────────────────────────────────────
 function IconBtn({
@@ -40,17 +58,17 @@ function IconBtn({
         width: 28, height: 28,
         display: "flex", alignItems: "center", justifyContent: "center",
         borderRadius: 6,
-        border: "1px solid transparent",
-        background: active || hovered
-          ? "var(--color-surface-high, rgba(255,255,255,0.12))"
-          : "transparent",
+        border: active ? "1px solid var(--color-primary, #6965db)" : "1px solid transparent",
+        background: active
+          ? "var(--color-primary-light, #e0dfff)"
+          : hovered ? "var(--color-surface-high, rgba(128,128,128,0.15))" : "transparent",
         color: active
           ? "var(--color-primary, #6965db)"
           : "var(--color-on-surface, #888)",
         cursor: disabled ? "default" : "pointer",
         padding: 0,
         opacity: disabled ? 0.4 : 1,
-        transition: "background 120ms, color 120ms",
+        transition: "background 100ms, color 100ms, border-color 100ms",
       }}
     >
       {children}
@@ -58,23 +76,35 @@ function IconBtn({
   );
 }
 
+const Divider = () => (
+  <div style={{
+    width: 1, height: 16, flexShrink: 0,
+    background: "var(--color-border-outline-variant, rgba(128,128,128,0.25))",
+  }} />
+);
+
 // ── Top-right toolbar ─────────────────────────────────────────────────────────
 function TopBar({
-  apiRef,
-  theme,
-  onToggleTheme,
+  apiRef, appState, theme, onToggleTheme,
 }: {
   apiRef: React.RefObject<ExcalidrawImperativeAPI | null>;
+  appState: UIAppState;
   theme: "light" | "dark";
   onToggleTheme: () => void;
 }) {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
-    const onChange = () => setIsFullscreen(!!document.fullscreenElement);
-    document.addEventListener("fullscreenchange", onChange);
-    return () => document.removeEventListener("fullscreenchange", onChange);
+    const onFsChange = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", onFsChange);
+    return () => document.removeEventListener("fullscreenchange", onFsChange);
   }, []);
+
+  const activeTool = appState.activeTool.type as string;
+
+  const setTool = useCallback((tool: ToolType) => {
+    apiRef.current?.setActiveTool({ type: tool });
+  }, [apiRef]);
 
   const fitView = useCallback(() => {
     const api = apiRef.current;
@@ -146,7 +176,23 @@ function TopBar({
 
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 2, padding: "0 4px 0 2px" }}>
-      <IconBtn title="Fit to view" onClick={fitView}><Maximize2 size={13} /></IconBtn>
+
+      {/* Shape tool quick-access strip */}
+      {SHAPE_TOOLS.map(({ tool, title, icon }) => (
+        <IconBtn
+          key={tool}
+          title={title}
+          active={activeTool === tool}
+          onClick={() => setTool(tool)}
+        >
+          {icon}
+        </IconBtn>
+      ))}
+
+      <Divider />
+
+      {/* View / export actions */}
+      <IconBtn title="Fit to view" onClick={fitView}><Scan size={13} /></IconBtn>
       <IconBtn
         title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
         onClick={toggleFullscreen}
@@ -158,10 +204,7 @@ function TopBar({
       <IconBtn title="Save PNG" onClick={savePng}><ImageDown size={13} /></IconBtn>
       <IconBtn title="Save SVG" onClick={saveSvg}><FileCode2 size={13} /></IconBtn>
 
-      <div style={{
-        width: 1, height: 16, flexShrink: 0, margin: "0 4px",
-        background: "var(--color-border-outline-variant, rgba(128,128,128,0.3))",
-      }} />
+      <Divider />
 
       <IconBtn
         title={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
@@ -212,9 +255,10 @@ export default function ExcalidrawApp() {
         onChange={handleChange}
         autoFocus
         handleKeyboardGlobally
-        renderTopRightUI={() => (
+        renderTopRightUI={(_isMobile, appState) => (
           <TopBar
             apiRef={apiRef}
+            appState={appState}
             theme={theme}
             onToggleTheme={() => setTheme(t => t === "light" ? "dark" : "light")}
           />
