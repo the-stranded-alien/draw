@@ -233,6 +233,8 @@ export default function ExcalidrawApp() {
           <MainMenu.DefaultItems.Export />
           <MainMenu.DefaultItems.SaveAsImage />
           <MainMenu.Separator />
+          <MainMenu.DefaultItems.ChangeCanvasBackground />
+          <MainMenu.Separator />
           <MainMenu.DefaultItems.SearchMenu />
           <MainMenu.DefaultItems.Help />
           <MainMenu.DefaultItems.ClearCanvas />
