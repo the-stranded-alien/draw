@@ -6,49 +6,7 @@ html, body {
   overflow: hidden;
 }
 
-/* ── Theme overrides ──────────────────────────────────────────────────────────
-   Selector [data-draw-theme] .excalidraw.theme--dark  →  specificity 0,3,0
-   Excalidraw's own .excalidraw.theme--dark             →  specificity 0,2,0
-   Higher specificity wins without needing !important.
-   The data-draw-theme attribute is set on the wrapper <div> in ExcalidrawApp.
-   Light / Dark use Excalidraw defaults (no override needed).
-────────────────────────────────────────────────────────────────────────────── */
-
-/* Ocean — dark UI + cyan accent */
-[data-draw-theme="ocean"] .excalidraw.theme--dark {
-  --color-primary:               #22d3ee;
-  --color-primary-darker:        #06b6d4;
-  --color-primary-darkest:       #0891b2;
-  --color-primary-hover:         #67e8f9;
-  --color-primary-light:         #083344;
-  --color-primary-light-darker:  #0e7490;
-  --color-brand-hover:           #38bdf8;
-  --color-brand-active:          #0284c7;
-  --color-selection:             #22d3ee33;
-}
-
-/* Sunset — dark UI + orange accent */
-[data-draw-theme="sunset"] .excalidraw.theme--dark {
-  --color-primary:               #fb923c;
-  --color-primary-darker:        #f97316;
-  --color-primary-darkest:       #ea580c;
-  --color-primary-hover:         #fdba74;
-  --color-primary-light:         #431407;
-  --color-primary-light-darker:  #7c2d12;
-  --color-brand-hover:           #fed7aa;
-  --color-brand-active:          #c2410c;
-  --color-selection:             #fb923c33;
-}
-
-/* Purple — dark UI + vivid purple accent (distinct from the default muted #a8a5ff) */
-[data-draw-theme="purple"] .excalidraw.theme--dark {
-  --color-primary:               #c084fc;
-  --color-primary-darker:        #a855f7;
-  --color-primary-darkest:       #9333ea;
-  --color-primary-hover:         #d8b4fe;
-  --color-primary-light:         #3b0764;
-  --color-primary-light-darker:  #4c1d95;
-  --color-brand-hover:           #e9d5ff;
-  --color-brand-active:          #7e22ce;
-  --color-selection:             #c084fc33;
+/* Hide the Excalidraw logo that appears in the footer */
+.excalidraw .ExcalidrawLogo {
+  display: none !important;
 }
