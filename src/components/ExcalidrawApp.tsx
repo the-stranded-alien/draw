@@ -2,13 +2,13 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import {
-  Excalidraw, serializeAsJSON,
+  Excalidraw, MainMenu, serializeAsJSON,
   exportToBlob, exportToSvg, exportToClipboard,
 } from "@excalidraw/excalidraw";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import "@excalidraw/excalidraw/index.css";
 import { LIBRARY_ITEMS } from "@/lib/libraryItems";
-import { Maximize2, Copy, ImageDown, FileCode2 } from "lucide-react";
+import { Maximize2, Copy, ImageDown, FileCode2, Expand, Minimize } from "lucide-react";
 
 // ── Persistence ───────────────────────────────────────────────────────────────
 const STORAGE_KEY = "draw-excalidraw-scene";
@@ -18,19 +18,19 @@ function loadSavedScene() {
 }
 
 // ── Themes ────────────────────────────────────────────────────────────────────
-// swatch: left half = accent color, right half = surface bg (gradient circle)
-// This makes each theme visually distinct at a glance.
+// swatch: left = accent, right = bg (gradient half-circle)
+// --theme-filter: overrides the canvas CSS filter to tint the drawing surface
 const THEMES = {
   light: {
     excalidrawTheme: "light" as const,
-    accent: "#6965db",   // default Excalidraw indigo
+    accent: "#6965db",
     bg:     "#ffffff",
     label:  "Light",
-    vars:   null,        // use Excalidraw defaults
+    vars:   null,
   },
   dark: {
     excalidrawTheme: "dark" as const,
-    accent: "#a8a5ff",   // default dark-mode accent
+    accent: "#a8a5ff",
     bg:     "#1e1e1e",
     label:  "Dark",
     vars:   null,
@@ -50,7 +50,6 @@ const THEMES = {
       "--color-brand-hover":           "#38bdf8",
       "--color-brand-active":          "#0284c7",
       "--color-selection":             "#22d3ee33",
-      // Surface / chrome colors — what makes the theme visually distinct
       "--color-surface-lowest":        "hsl(207, 80%, 5%)",
       "--color-surface-low":           "hsl(207, 65%, 11%)",
       "--color-surface-mid":           "hsl(207, 68%, 8%)",
@@ -60,6 +59,8 @@ const THEMES = {
       "--input-bg-color":              "hsl(207, 68%, 9%)",
       "--input-hover-bg-color":        "hsl(207, 62%, 12%)",
       "--popup-secondary-bg-color":    "hsl(207, 65%, 10%)",
+      // Canvas tint: dark + subtle cyan cast
+      "--theme-filter": "invert(93%) hue-rotate(180deg) sepia(12%) hue-rotate(195deg)",
     },
   },
   sunset: {
@@ -86,6 +87,8 @@ const THEMES = {
       "--input-bg-color":              "hsl(20, 62%, 8%)",
       "--input-hover-bg-color":        "hsl(20, 58%, 11%)",
       "--popup-secondary-bg-color":    "hsl(20, 60%, 9%)",
+      // Canvas tint: dark + subtle amber/warm cast
+      "--theme-filter": "invert(93%) hue-rotate(180deg) sepia(18%) hue-rotate(350deg)",
     },
   },
   purple: {
@@ -112,13 +115,15 @@ const THEMES = {
       "--input-bg-color":              "hsl(270, 64%, 9%)",
       "--input-hover-bg-color":        "hsl(270, 58%, 12%)",
       "--popup-secondary-bg-color":    "hsl(270, 62%, 10%)",
+      // Canvas tint: dark + subtle violet cast
+      "--theme-filter": "invert(93%) hue-rotate(180deg) sepia(12%) hue-rotate(250deg)",
     },
   },
 } as const;
 
 type ThemeKey = keyof typeof THEMES;
 
-// ── Shared button primitive ───────────────────────────────────────────────────
+// ── Shared icon button ────────────────────────────────────────────────────────
 function IconBtn({
   title, onClick, children, disabled,
 }: {
@@ -148,7 +153,7 @@ function IconBtn({
         cursor: disabled ? "default" : "pointer",
         padding: 0,
         opacity: disabled ? 0.4 : 1,
-        transition: "background 120ms, border-color 120ms",
+        transition: "background 120ms",
       }}
     >
       {children}
@@ -156,14 +161,30 @@ function IconBtn({
   );
 }
 
-// ── Action bar (export / view controls) ──────────────────────────────────────
+// ── Action bar ────────────────────────────────────────────────────────────────
 function ActionBar({ apiRef }: { apiRef: React.RefObject<ExcalidrawImperativeAPI | null> }) {
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const onChange = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", onChange);
+    return () => document.removeEventListener("fullscreenchange", onChange);
+  }, []);
+
   const fitView = useCallback(() => {
     const api = apiRef.current;
     if (!api) return;
     const els = api.getSceneElements();
     api.scrollToContent(els.length ? els : undefined, { fitToContent: true });
   }, [apiRef]);
+
+  const toggleFullscreen = useCallback(() => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  }, []);
 
   const copyImage = useCallback(async () => {
     const api = apiRef.current;
@@ -192,8 +213,7 @@ function ActionBar({ apiRef }: { apiRef: React.RefObject<ExcalidrawImperativeAPI
         exportPadding: 16,
       });
       const url = URL.createObjectURL(blob);
-      const a = Object.assign(document.createElement("a"), { href: url, download: "drawing.png" });
-      a.click();
+      Object.assign(document.createElement("a"), { href: url, download: "drawing.png" }).click();
       URL.revokeObjectURL(url);
     } catch {
       api.setToast({ message: "PNG export failed", duration: 2000 });
@@ -210,11 +230,9 @@ function ActionBar({ apiRef }: { apiRef: React.RefObject<ExcalidrawImperativeAPI
         files: api.getFiles(),
         exportPadding: 16,
       });
-      const svgStr = new XMLSerializer().serializeToString(svg);
-      const blob = new Blob([svgStr], { type: "image/svg+xml" });
+      const blob = new Blob([new XMLSerializer().serializeToString(svg)], { type: "image/svg+xml" });
       const url = URL.createObjectURL(blob);
-      const a = Object.assign(document.createElement("a"), { href: url, download: "drawing.svg" });
-      a.click();
+      Object.assign(document.createElement("a"), { href: url, download: "drawing.svg" }).click();
       URL.revokeObjectURL(url);
     } catch {
       api?.setToast({ message: "SVG export failed", duration: 2000 });
@@ -224,6 +242,9 @@ function ActionBar({ apiRef }: { apiRef: React.RefObject<ExcalidrawImperativeAPI
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
       <IconBtn title="Fit to view" onClick={fitView}><Maximize2 size={13} /></IconBtn>
+      <IconBtn title={isFullscreen ? "Exit fullscreen" : "Fullscreen"} onClick={toggleFullscreen}>
+        {isFullscreen ? <Minimize size={13} /> : <Expand size={13} />}
+      </IconBtn>
       <IconBtn title="Copy as image" onClick={copyImage}><Copy size={13} /></IconBtn>
       <IconBtn title="Save PNG" onClick={savePng}><ImageDown size={13} /></IconBtn>
       <IconBtn title="Save SVG" onClick={saveSvg}><FileCode2 size={13} /></IconBtn>
@@ -239,8 +260,6 @@ function ThemeSwitcher({ current, onChange }: { current: ThemeKey; onChange: (k:
       {(Object.keys(THEMES) as ThemeKey[]).map((key) => {
         const t = THEMES[key];
         const active = current === key;
-        // Half-circle gradient: left = accent, right = background.
-        // This makes every theme immediately distinguishable at 22px.
         const gradient = `linear-gradient(135deg, ${t.accent} 50%, ${t.bg} 50%)`;
         return (
           <button
@@ -253,16 +272,16 @@ function ThemeSwitcher({ current, onChange }: { current: ThemeKey; onChange: (k:
               width: 22, height: 22,
               borderRadius: "50%",
               background: gradient,
-              border: `2px solid ${active ? t.accent : "transparent"}`,
-              outline: active ? `2.5px solid ${t.accent}50` : "none",
-              outlineOffset: 1,
+              border: "none",
+              outline: "none",
               cursor: "pointer",
               padding: 0,
-              transform: active ? "scale(1.25)" : "scale(1)",
-              transition: "transform 150ms cubic-bezier(0.16,1,0.3,1), border-color 120ms",
+              transform: active ? "scale(1.22)" : "scale(1)",
+              transition: "transform 150ms cubic-bezier(0.16,1,0.3,1), box-shadow 120ms",
+              // Subtle white ring on all; active gets accent glow + stronger white ring
               boxShadow: active
-                ? `0 0 0 1px ${t.accent}60, 0 2px 8px ${t.accent}40`
-                : "0 0 0 1px rgba(0,0,0,0.25)",
+                ? `0 0 0 2px ${t.accent}, 0 0 0 3.5px rgba(255,255,255,0.55), 0 2px 8px ${t.accent}50`
+                : "0 0 0 1.5px rgba(255,255,255,0.35)",
             }}
           />
         );
@@ -280,19 +299,12 @@ function TopBar({
   setTheme: (k: ThemeKey) => void;
 }) {
   return (
-    <div style={{
-      display: "flex", alignItems: "center", gap: 8,
-      padding: "0 4px 0 2px",
-    }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "0 4px 0 2px" }}>
       <ActionBar apiRef={apiRef} />
-
-      {/* Divider */}
       <div style={{
-        width: 1, height: 16,
+        width: 1, height: 16, flexShrink: 0,
         background: "var(--color-border-outline-variant, rgba(128,128,128,0.3))",
-        flexShrink: 0,
       }} />
-
       <ThemeSwitcher current={theme} onChange={setTheme} />
     </div>
   );
@@ -315,8 +327,6 @@ export default function ExcalidrawApp() {
     window.EXCALIDRAW_ASSET_PATH = "/";
   }, []);
 
-  // Inject a <style> tag with !important overrides for custom themes.
-  // Using !important beats the higher-specificity .excalidraw.theme--dark rules.
   const applyThemeColors = useCallback((themeKey: ThemeKey) => {
     if (typeof document === "undefined") return;
     if (!styleTagRef.current) {
@@ -373,7 +383,18 @@ export default function ExcalidrawApp() {
             export: { saveFileToDisk: true },
           },
         }}
-      />
+      >
+        {/* Custom menu — same actions as default but without the Excalidraw links group */}
+        <MainMenu>
+          <MainMenu.DefaultItems.LoadScene />
+          <MainMenu.DefaultItems.Export />
+          <MainMenu.DefaultItems.SaveAsImage />
+          <MainMenu.Separator />
+          <MainMenu.DefaultItems.SearchMenu />
+          <MainMenu.DefaultItems.Help />
+          <MainMenu.DefaultItems.ClearCanvas />
+        </MainMenu>
+      </Excalidraw>
     </div>
   );
 }

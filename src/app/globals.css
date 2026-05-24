@@ -6,7 +6,10 @@ html, body {
   overflow: hidden;
 }
 
-/* Hide the Excalidraw logo that appears in the footer */
-.excalidraw .ExcalidrawLogo {
+/* ── Remove Excalidraw branding ───────────────────────────────────────────── */
+
+/* Logo mark in the footer center ("N" shaped icon) */
+.excalidraw .ExcalidrawLogo,
+.excalidraw .layer-ui__wrapper__footer-center {
   display: none !important;
 }
